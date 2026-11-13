@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enf. Arthur | Receituário</title>
+<style>
+:root{--navy:#173b4a;--teal:#18788a;--bg:#f1f5f7;--line:#dce5e9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:#263b44}
+header{background:var(--navy);color:white;padding:24px 5%}
+header h1{margin:0 0 7px;font-size:23px}
+header p{margin:4px 0;font-size:13px}
+nav{background:white;padding:12px 5%;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+button{border:0;border-radius:7px;padding:11px 15px;background:var(--teal);color:white;font-weight:bold;cursor:pointer}
+nav button{background:#edf3f5;color:var(--navy)}
+nav button.active{background:var(--navy);color:white}
+main{max-width:1100px;margin:24px auto;padding:0 15px 40px}
+.panel{background:white;border:1px solid var(--line);border-radius:12px;padding:21px;margin-bottom:17px}
+h2{color:var(--navy);font-size:20px;margin-top:0}
+h3{color:var(--navy);font-size:16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:bold;margin:10px 0 6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #cbd8dd;border-radius:7px;font:inherit;background:white}
+textarea{min-height:80px}
+.small{font-size:12px;color:#657981}
+.notice{background:#fff7e5;border:1px solid #eed9a7;color:#6b5425;padding:12px;border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:15px}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:15px}
+.drug{border:1px solid var(--line);border-radius:9px;padding:13px}
+.drug strong{color:var(--navy)}
+.drug p{font-size:12px;line-height:1.5;margin:6px 0}
+.drug button{font-size:12px;padding:8px 10px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.secondary{background:#eaf0f2;color:var(--navy)}
+.danger{background:#a33e3e}
+.item{border-bottom:1px solid var(--line);padding:12px 0}
+.item:last-child{border:0}
+[hidden]{display:none!important}
+footer{text-align:center;color:#70838a;font-size:12px;padding:20px}
+@media(max-width:650px){.grid,.results{grid-template-columns:1fr}.full{grid-column:auto}}
+@media print{
+ body{background:white;color:black}
+ header,nav,.no-print,footer{display:none!important}
+ main{margin:0;padding:0}
+ .panel{display:none;border:0;box-shadow:none;padding:0}
+ #printPanel{display:block!important}
+ @page{size:A4;margin:2cm}
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Enf. Arthur – Estomaterapia</h1>
+<p>Arthur dos Santos Moreira</p>
+<p>COREN-MG 966.189 – ENF</p>
+<p>Enfermeiro Emergencista e Intensivista</p>
+</header>
+
+<nav class="no-print">
+<button class="active" onclick="tab('paciente',this)">Paciente</button>
+<button onclick="tab('catalogo',this)">Medicamentos</button>
+<button onclick="tab('protocolo',this)">Protocolos</button>
+<button onclick="tab('prescricao',this)">Prescrição</button>
+</nav>
+
+<main>
+<section class="panel" id="paciente">
+<h2>1. Identificação do paciente</h2>
+<div class="grid">
+<div class="full"><label>Nome completo</label><input id="nome" placeholder="Nome do paciente"></div>
+<div><label>Data de nascimento</label><input id="nascimento" type="date"></div>
+<div><label>CPF ou identificador</label><input id="cpf" placeholder="Identificador do paciente"></div>
+<div><label>Data da prescrição</label><input id="data" type="date"></div>
+<div><label>Instituição / serviço</label><input id="instituicao" value="Enf. Arthur – Estomaterapia"></div>
+<div class="full"><label>CNPJ do serviço</label><input id="cnpj" value="64.033.628/0001-76"></div>
+</div>
+<div class="actions"><button onclick="tab('catalogo',document.querySelectorAll('nav button')[1])">Ir para medicamentos</button></div>
+</section>
+
+<section class="panel" id="catalogo" hidden>
+<h2>2. Catálogo de medicamentos – Anexo II</h2>
+<div class="notice">
+Catálogo de referência baseado no Anexo II da Resolução Cofen nº 801/2026. A inclusão de um medicamento no Anexo não concede autorização irrestrita para prescrevê-lo. A prescrição depende de consulta de enfermagem, competência profissional e protocolo ou rotina aprovada aplicável.
+</div>
+<div class="grid">
+<div class="full"><label>Pesquisar medicamento, concentração ou apresentação</label><input id="busca" placeholder="Digite para pesquisar..." oninput="renderCatalog()"></div>
+<div class="full"><label>Filtrar por grupo</label>
+<select id="grupo" onchange="renderCatalog()">
+<option value="">Todos os grupos</option>
+</select></div>
+</div>
+<p class="small" id="contador"></p>
+<div class="results" id="resultados"></div>
+<h3>Medicamentos selecionados</h3>
+<div id="selecionados"><p class="small">Nenhum item selecionado.</p></div>
+</section>
+
+<section class="panel" id="protocolo" hidden>
+<h2>3. Protocolo e respaldo institucional</h2>
+<div class="notice">Informe o protocolo realmente utilizado, seu ano e a instituição que o aprovou. O documento de referência do Anexo II não substitui a aprovação do protocolo do serviço.</div>
+<div class="grid">
+<div class="full"><label>Nome do protocolo</label><input id="protNome" placeholder="Nome do protocolo utilizado"></div>
+<div><label>Instituição que aprovou</label><input id="protInstituicao" placeholder="Instituição responsável"></div>
+<div><label>Ano de aprovação/publicação</label><input id="protAno" placeholder="Ano"></div>
+<div class="full"><label>Link oficial</label><input id="protLink" placeholder="https://..."></div>
+<div class="full"><label>Observações</label><textarea id="protObs"></textarea></div>
+</div>
+</section>
+
+<section class="panel" id="prescricao" hidden>
+<h2>4. Montagem da prescrição</h2>
+<div class="notice">Confira a indicação, a dose, a via, a duração, as contraindicações, as alergias e as condições individuais do paciente. Não utilize posologia automática sem respaldo no protocolo aplicável.</div>
+<div id="listaPrescricao"></div>
+<div class="actions">
+<button onclick="gerar()">Gerar receituário</button>
+<button onclick="window.print()">Imprimir / Salvar PDF</button>
+</div>
+</section>
+
+<section class="panel" id="printPanel" hidden>
+<div id="documento"></div>
+</section>
+</main>
+<footer>Ferramenta de apoio. Uso condicionado às normas profissionais, sanitárias e aos protocolos aprovados.</footer>
+
+<script>
+const fonte="Resolução Cofen nº 801/2026 – Anexo II";
+const dados=[
+["1. IST, saúde sexual e reprodutiva","Aciclovir","200 mg","Comprimido","Herpes genital","PCDT de Atenção Integral às Pessoas com IST"],
+["1. IST, saúde sexual e reprodutiva","Benzilpenicilina benzatina","1,2 milhão UI","Suspensão injetável","Sífilis recente e tardia","PCDT IST – Sífilis; Portaria MS nº 156/2006"],
+["1. IST, saúde sexual e reprodutiva","Doxiciclina","100 mg","Comprimido","Sífilis alternativa (exceto gestantes), donovanose e uretrites","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Azitromicina","500 mg e 1 g","Comprimido","Uretrites, cervicites e clamídia","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Ceftriaxona","500 mg e 1 g","Pó para solução injetável","Gonorreia e síndromes genitais complicadas","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Ciprofloxacino","500 mg","Comprimido","Cancroide e donovanose","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Metronidazol","250 mg","Comprimido","Tricomoníase e vaginose bacteriana","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Metronidazol","100 mg/g","Gel vaginal","Vaginose bacteriana","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Secnidazol","1 g","Comprimido","Tricomoníase","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Nistatina","100.000 UI","Creme vaginal","Candidíase vulvovaginal","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Miconazol","20 mg/g","Creme vaginal","Candidíase vulvovaginal","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Fluconazol","150 mg","Comprimido","Candidíase vaginal","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Itraconazol","100 mg","Comprimido","Candidíase vaginal","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Clindamicina","300 mg","Comprimido","Vaginose bacteriana","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Ácido tricloroacético (ATA)","80–90%","Solução tópica","Verrugas anogenitais (HPV)","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Podofilina","10–25%","Solução tópica","Verrugas anogenitais (HPV)","PCDT IST"],
+["1. IST, saúde sexual e reprodutiva","Imiquimode","50 mg/g","Creme","Verrugas anogenitais (HPV)","PCDT IST"],
+
+["2. Contracepção e saúde sexual/reprodutiva","Etinilestradiol + levonorgestrel","0,03 mg + 0,15 mg","Comprimido","Contracepção hormonal combinada","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Etinilestradiol + desogestrel","20 mcg + 150 mcg","Comprimido","Contracepção hormonal combinada","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Etinilestradiol + desogestrel","30 mcg + 150 mcg","Comprimido","Contracepção hormonal combinada","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Etinilestradiol + gestodeno","20 mcg + 75 mcg","Cartela de 21 comprimidos","Contracepção hormonal combinada","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Etinilestradiol + gestodeno","30 mcg + 75 mcg","Cartela de 21 comprimidos","Contracepção hormonal combinada","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Etinilestradiol + gestodeno","15 mcg + 60 mcg","Cartela de 28 comprimidos","Contracepção hormonal combinada","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Etinilestradiol + gestodeno","30 mcg + 60 mcg","Cartela de 28 comprimidos","Contracepção hormonal combinada","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Desogestrel","75 mcg","Comprimido","Contracepção só com progestagênio","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Noretisterona","0,35 mg","Comprimido","Contracepção só com progestagênio","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Acetato de medroxiprogesterona","150 mg","Suspensão injetável","Anticoncepcional injetável trimestral","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Acetato de medroxiprogesterona + cipionato de estradiol","25 mg + 5 mg","Suspensão injetável","Anticoncepcional mensal combinado","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Enantato de noretisterona + valerato de estradiol","50 mg + 5 mg","Solução injetável","Anticoncepcional mensal combinado","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Etonogestrel + etinilestradiol","0,120 mg + 0,015 mg","Anel vaginal","Contracepção hormonal vaginal","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Levonorgestrel","0,75 mg e 1,5 mg","Comprimido","Contracepção de emergência","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","Implante subdérmico de etonogestrel","68 mg","Implante subdérmico","Contracepção de longa duração","Caderno AB nº 26 e notas técnicas MS"],
+["2. Contracepção e saúde sexual/reprodutiva","DIU de cobre","TCu 380A","Dispositivo intrauterino","Contracepção não hormonal","Caderno AB nº 26"],
+["2. Contracepção e saúde sexual/reprodutiva","DIU hormonal – levonorgestrel","19,5 mg e 52 mg","Dispositivo intrauterino","Contracepção hormonal de longa duração","Diretrizes de saúde sexual e reprodutiva"],
+
+["3. PEP e PrEP para HIV","Dolutegravir","50 mg","Comprimido","Antirretroviral em tratamento e PEP","PCDT HIV e normas de PEP"],
+["3. PEP e PrEP para HIV","Lamivudina (3TC)","150 mg","Comprimido","Antirretroviral em tratamento e PEP","PCDT HIV"],
+["3. PEP e PrEP para HIV","Tenofovir (TDF)","300 mg","Comprimido","Antirretroviral em tratamento e PEP","PCDT HIV e normas de PEP"],
+["3. PEP e PrEP para HIV","TDF + lamivudina","300 mg + 300 mg","Comprimido","Antirretroviral em combinação","PCDT HIV"],
+["3. PEP e PrEP para HIV","Zidovudina + lamivudina (AZT/3TC)","300 mg + 150 mg","Comprimido","Esquema alternativo de PEP","PCDT HIV"],
+["3. PEP e PrEP para HIV","Darunavir + ritonavir","800 mg + 100 mg","Comprimido","Esquema alternativo de PEP","PCDT HIV"],
+["3. PEP e PrEP para HIV","Tenofovir desoproxila + emtricitabina","300 mg + 200 mg","Comprimido","PrEP oral","PCDT PrEP"],
+
+["4. Atenção à Saúde da Mulher","Dipirona","500–1.000 mg","Comprimido","Analgésico/antitérmico","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Estriol","1 mg/g","Creme vaginal","Ressecamento vaginal/colpite atrófica","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Ibuprofeno","300–600 mg","Comprimido","Analgésico/antitérmico","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Diclofenaco","50 mg","Comprimido","Dismenorreia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Escopolamina","10 mg","Comprimido","Antiespasmódico/dismenorreia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Paracetamol","500–750 mg","Comprimido","Analgésico/antitérmico","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Piroxicam","20 mg","Comprimido","Dismenorreia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Nimesulida","100 mg","Comprimido","Dismenorreia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Nitrofurantoína","100 mg","Comprimido","ITU não complicada","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Sulfametoxazol + trimetoprima","800 mg + 160 mg","Comprimido","ITU não complicada","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Ciprofloxacino","500 mg","Comprimido","ITU não complicada – segunda linha","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Levofloxacino","750 mg","Comprimido","ITU não complicada – segunda linha","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["4. Atenção à Saúde da Mulher","Sulfato ferroso","40 mg de ferro elementar","Comprimido","Suplementação no puerpério/anemia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+
+["5. Pré-natal","Aciclovir","200 mg","Comprimido","Herpes simples","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Ácido acetilsalicílico","100 mg","Comprimido","Profilaxia de pré-eclâmpsia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Ácido fólico","5 mg","Comprimido","Suplementação no pré-natal","Caderno AB nº 32 e protocolos de saúde da mulher"],
+["5. Pré-natal","Ácido fólico","0,2 mg/mL","Solução oral","Suplementação no pré-natal","Caderno de suplementação de micronutrientes"],
+["5. Pré-natal","Ácido fólico","400 mcg ou 0,4 mg","Cápsula gelatinosa mole","Suplementação no pré-natal","Caderno de suplementação de micronutrientes"],
+["5. Pré-natal","Alfa-metildopa","250 mg","Comprimido","Hipertensão arterial","Caderno AB nº 32"],
+["5. Pré-natal","Amoxicilina","500 mg","Cápsula","Antibioticoterapia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Ampicilina","500 mg","Comprimido","Antibioticoterapia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Azitromicina","500 mg","Comprimido","Antibioticoterapia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Cefalexina","500 mg","Cápsula","Infecção urinária/bacteriúria","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Ceftriaxona","250, 500 e 1.000 mg","Pó para solução injetável","Infecção urinária/cervicite","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Dimenidrinato + piridoxina","50 mg + 10 mg","Comprimido","Antiemético","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Dimeticona","40 e 120 mg","Comprimido","Flatulência","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Dipirona","500 mg","Comprimido","Analgésico/antitérmico","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Dipirona","500 mg/mL","Solução oral","Analgésico/antitérmico","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Eritromicina","500 mg","Cápsula ou comprimido","Antibioticoterapia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Hidróxido de alumínio","200 mg","Comprimido mastigável","Pirose","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Hidróxido de alumínio + magnésio","35,6 mg + 37 mg/mL","Suspensão oral","Pirose","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Hioscina/butilescopolamina","10 mg","Comprimido","Cólicas","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Mebendazol","150 mg","Comprimido","Helmintíase","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Mebendazol","20 mg/mL","Suspensão oral","Helmintíase","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Metoclopramida","10 mg","Comprimido","Antiemético/hiperêmese","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Metronidazol","4 mg/mL","Solução oral","Corrimento vaginal","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Metronidazol","250 mg","Comprimido","Corrimento vaginal","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Metronidazol","5%","Creme vaginal","Corrimento vaginal","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Nifedipina","20 mg","Comprimido","Hipertensão arterial","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Nitrofurantoína","100 mg","Comprimido","Infecção urinária","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Paracetamol","500 mg","Comprimido","Analgésico/antitérmico","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Paracetamol","100 mg/mL","Solução oral","Analgésico/antitérmico","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Penicilina benzatina","1.200.000 UI","Pó para solução injetável","Sífilis","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Sulfato ferroso","40 mg","Comprimido","Suplementação/anemia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Sulfato ferroso","25 mg/mL","Solução oral","Suplementação/anemia","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+["5. Pré-natal","Tiabendazol","500 mg","Comprimido","Estrongiloidíase","Protocolos da Atenção Básica: Saúde das Mulheres, 2016"],
+
+["6. Atenção à Saúde da Criança","Amoxicilina","250 mg/5 mL","Suspensão oral","Pneumonia/infecção aguda de ouvido/garganta","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Amoxicilina + clavulanato","250 mg/5 mL","Suspensão oral","Infecções na infância","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Eritromicina","250 mg/5 mL","Suspensão oral","Pneumonia/infecção aguda de ouvido/garganta","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Penicilina benzatina","600.000 UI e 1.200.000 UI","Pó para suspensão injetável","Infecção moderada de garganta","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Ceftriaxona","500 mg","Pó para solução injetável","Disenteria","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Sulfametoxazol + trimetoprima","200 mg + 40 mg/5 mL","Suspensão oral","Disenteria/cólera","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Azitromicina","200 mg/5 mL","Suspensão oral","Cólera","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Paracetamol","200 mg/mL","Solução oral","Febre e dor","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Dipirona","500 mg/mL","Solução oral","Febre e dor","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Ibuprofeno","50 mg/mL","Solução oral","Febre e dor","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Mebendazol","100 mg/5 mL","Suspensão oral","Verminose","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Albendazol","40 mg/mL","Suspensão oral","Verminose","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Albendazol","400 mg","Comprimido","Verminose","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Sulfato ferroso","5 mg/mL","Xarope","Suplementação/anemia","AIDPI Criança e programa de micronutrientes"],
+["6. Atenção à Saúde da Criança","Sulfato ferroso","25 mg/mL","Solução oral","Suplementação/anemia","Programa de micronutrientes"],
+["6. Atenção à Saúde da Criança","Vitamina A","100.000 UI e 200.000 UI","Solução oral","Suplementação","Programa Nacional de Suplementação de Vitamina A"],
+["6. Atenção à Saúde da Criança","Ondansetrona","4 mg","Comprimido dispersível","Vômitos persistentes em plano de hidratação","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Sais de reidratação oral (SRO)","NaCl 45; KCl 20; citrato 10; glicose 75 mmol/L","Pó para solução oral","Desidratação","AIDPI Criança, 2017"],
+["6. Atenção à Saúde da Criança","Nistatina","100.000 UI/mL","Suspensão oral","Candidíase oral","AIDPI Neonatal, 2014"],
+["6. Atenção à Saúde da Criança","Cefalexina","250 mg/5 mL","Suspensão oral","Pústulas/infecção no umbigo","AIDPI Neonatal, 2014"],
+["6. Atenção à Saúde da Criança","Mupirocina","20 mg/g","Pomada dermatológica","Pústulas/infecção no umbigo","AIDPI Neonatal, 2014"],
+["6. Atenção à Saúde da Criança","Neomicina + bacitracina","5 mg/g + 250 UI/g","Pomada dermatológica","Pústulas/infecção no umbigo","AIDPI Neonatal, 2014"],
+
+["7. Tuberculose e hanseníase","Isoniazida","100 e 300 mg","Comprimido","Tuberculose e ILTB","Manual de Recomendações para Controle da Tuberculose"],
+["7. Tuberculose e hanseníase","Rifampicina","300 mg","Cápsula","Tuberculose e hanseníase","Manual de TB e Diretrizes de Hanseníase"],
+["7. Tuberculose e hanseníase","Pirazinamida","500 mg","Comprimido","Tuberculose – fase intensiva","Manual de TB"],
+["7. Tuberculose e hanseníase","Etambutol","400 mg","Comprimido","Tuberculose – fase intensiva","Manual de TB"],
+["7. Tuberculose e hanseníase","Rifampicina + isoniazida + pirazinamida + etambutol (RHZE)","150/75/400/275 mg","Comprimidos combinados","Tuberculose – esquema básico","Manual de TB"],
+["7. Tuberculose e hanseníase","Rifampicina + isoniazida (RH)","300/150 mg ou 150/75 mg","Comprimidos combinados","Tuberculose – manutenção","Manual de TB"],
+["7. Tuberculose e hanseníase","Dapsona","50 e 100 mg","Comprimido","Hanseníase – PQT","Diretrizes de Hanseníase"],
+["7. Tuberculose e hanseníase","Clofazimina","50 e 100 mg","Cápsula","Hanseníase – PQT","Diretrizes de Hanseníase"],
+["7. Tuberculose e hanseníase","Rifapentina + isoniazida","150 mg + 300 mg","Comprimido","Tratamento de ILTB","Nota Informativa MS nº 4/2024"],
+
+["8. Diabetes, hipertensão e risco cardiovascular","Metformina","500 e 850 mg","Comprimido (inclusive liberação prolongada)","Diabetes mellitus","Caderno AB nº 36"],
+["8. Diabetes, hipertensão e risco cardiovascular","Gliclazida","30, 60 e 80 mg","Comprimido de liberação controlada","Diabetes mellitus","Caderno AB nº 36"],
+["8. Diabetes, hipertensão e risco cardiovascular","Glibenclamida","5 mg","Comprimido","Diabetes mellitus","Caderno AB nº 36"],
+["8. Diabetes, hipertensão e risco cardiovascular","Insulina NPH humana","100 UI/mL","Suspensão injetável","Diabetes mellitus","Caderno AB nº 36"],
+["8. Diabetes, hipertensão e risco cardiovascular","Insulina regular humana","100 UI/mL","Solução injetável","Diabetes mellitus","Caderno AB nº 36"],
+["8. Diabetes, hipertensão e risco cardiovascular","Hidroclorotiazida","12,5 e 25 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Furosemida","40 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Espironolactona","25 e 100 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Atenolol","50 e 100 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Metoprolol succinato","25, 50 e 100 mg","Comprimido de liberação controlada","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Carvedilol","3,125; 6,25; 12,5 e 25 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Propranolol","10 e 40 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Metildopa","250 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Nifedipina","10 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Anlodipino","5 e 10 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Verapamil","80 e 120 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Hidralazina","25 e 50 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Enalapril","5, 10 e 20 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Captopril","25 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37"],
+["8. Diabetes, hipertensão e risco cardiovascular","Losartana potássica","50 mg","Comprimido","Hipertensão arterial","Caderno AB nº 37 e AB nº 14"],
+["8. Diabetes, hipertensão e risco cardiovascular","Ácido acetilsalicílico","100 mg","Comprimido","Prevenção secundária cardiovascular","Caderno AB nº 14"],
+
+["9. Tabagismo","Nicotina","2 mg","Goma de mascar","Reposição de nicotina","Caderno AB nº 40"],
+["9. Tabagismo","Nicotina","7 mg","Adesivo transdérmico","Reposição de nicotina","Caderno AB nº 40"],
+["9. Tabagismo","Nicotina","14 mg","Adesivo transdérmico","Reposição de nicotina","Caderno AB nº 40"],
+["9. Tabagismo","Nicotina","21 mg","Adesivo transdérmico","Reposição de nicotina","Caderno AB nº 40"],
+
+["10. Dengue","Dipirona sódica","50 mg/mL e 500 mg/mL","Solução oral (gotas/xarope)","Analgésico/antipirético","Dengue: Manual de Enfermagem"],
+["10. Dengue","Dipirona sódica","500 mg","Comprimido","Analgésico/antipirético","Dengue: Manual de Enfermagem"],
+["10. Dengue","Paracetamol","200 mg/mL","Solução oral","Analgésico/antipirético","Dengue: Manual de Enfermagem"],
+["10. Dengue","Paracetamol","500 mg","Comprimido","Analgésico/antipirético","Dengue: Manual de Enfermagem"],
+["10. Dengue","Sais de reidratação oral (SRO)","NaCl 45; KCl 20; citrato 10; glicose 75 mmol/L","Pó para solução oral","Hidratação oral","Dengue: Manual de Enfermagem"],
+["10. Dengue","Soro fisiológico 0,9%","500 mL","Solução endovenosa","Hidratação venosa","Nota Técnica nº 01/2024 – COE/Cofen"]
+];
+
+let escolhidos=[];
+const grupos=[...new Set(dados.map(x=>x[0]))];
+grupos.forEach(g=>document.getElementById("grupo").add(new Option(g,g)));
+function tab(id,b){
+document.querySelectorAll("main>.panel").forEach(p=>{if(p.id!=="printPanel")p.hidden=p.id!==id});
+document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+if(b)b.classList.add("active");
+}
+function renderCatalog(){
+const q=document.getElementById("busca").value.toLocaleLowerCase("pt-BR");
+const g=document.getElementById("grupo").value;
+const filtrados=dados.filter(x=>(!g||x[0]===g)&&x.join(" ").toLocaleLowerCase("pt-BR").includes(q));
+document.getElementById("contador").textContent=filtrados.length+" apresentação(ões) encontradas no catálogo.";
+const box=document.getElementById("resultados");box.replaceChildren();
+filtrados.forEach(x=>{
+const card=document.createElement("div");card.className="drug";
+const title=document.createElement("strong");title.textContent=x[1];
+const p=document.createElement("p");p.textContent=x[0];
+const detail=document.createElement("p");detail.textContent="Concentração: "+x[2]+" | Apresentação: "+x[3];
+const use=document.createElement("p");use.textContent="Uso de referência: "+x[4];
+const source=document.createElement("p");source.textContent="Documento: "+x[5];
+const b=document.createElement("button");b.textContent="Selecionar";
+b.onclick=()=>selecionar(x);
+card.append(title,p,detail,use,source,b);box.append(card);
+});
+}
+function selecionar(x){
+const dose=prompt("Informe a posologia conforme protocolo aprovado. Não há dose automática:", "");
+if(dose===null)return;
+const via=prompt("Informe a via de administração:", "");
+if(via===null)return;
+escolhidos.push({grupo:x[0],nome:x[1],conc:x[2],apres:x[3],uso:x[4],fonte:x[5],dose,via});
+renderEscolhidos();
+}
+function renderEscolhidos(){
+const box=document.getElementById("selecionados");box.replaceChildren();
+if(!escolhidos.length){box.textContent="Nenhum item selecionado.";return;}
+escolhidos.forEach((x,i)=>{
+const d=document.createElement("div");d.className="item";
+const p=document.createElement("p");p.textContent=(i+1)+". "+x.nome+" – "+x.conc+" – "+x.apres+" | Via: "+x.via+" | Posologia: "+x.dose;
+const b=document.createElement("button");b.className="danger";b.textContent="Remover";b.onclick=()=>{escolhidos.splice(i,1);renderEscolhidos()};
+d.append(p,b);box.append(d);
+});
+}
+function gerar(){
+const n=document.getElementById("nome").value.trim();
+if(!n){alert("Informe o nome do paciente.");tab("paciente",document.querySelector("nav button"));return;}
+if(!escolhidos.length){alert("Selecione pelo menos um item no catálogo.");tab("catalogo",document.querySelectorAll("nav button")[1]);return;}
+const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let html="<h2 style='text-align:center'>RECEITUÁRIO / PRESCRIÇÃO</h2>";
+html+="<p><b>Arthur dos Santos Moreira</b><br>COREN-MG 966.189 – ENF<br>Enfermeiro Emergencista e Intensivista</p><hr>";
+html+="<p><b>Serviço:</b> "+esc(document.getElementById("instituicao").value)+"<br><b>CNPJ:</b> "+esc(document.getElementById("cnpj").value)+"</p>";
+html+="<p><b>Paciente:</b> "+esc(n)+"<br><b>Nascimento:</b> "+esc(document.getElementById("nascimento").value)+"<br><b>Identificador:</b> "+esc(document.getElementById("cpf").value)+"<br><b>Data:</b> "+esc(document.getElementById("data").value)+"</p><hr><h3>Prescrição</h3>";
+escolhidos.forEach((x,i)=>{html+="<p><b>"+(i+1)+". "+esc(x.nome)+"</b><br>Concentração: "+esc(x.conc)+"<br>Apresentação: "+esc(x.apres)+"<br>Via: "+esc(x.via)+"<br>Posologia: "+esc(x.dose)+"<br>Grupo: "+esc(x.grupo)+"</p>"});
+html+="<hr><h3>Protocolo utilizado</h3><p>"+esc(document.getElementById("protNome").value)+"<br>"+esc(document.getElementById("protInstituicao").value)+" – "+esc(document.getElementById("protAno").value)+"<br>"+esc(document.getElementById("protObs").value)+"</p>";
+html+="<p class='small'>Referência do catálogo: "+fonte+". Conferir protocolo institucional aprovado e indicação clínica.</p>";
+html+="<div style='margin-top:65px;text-align:center'>_____________________________________<br>Arthur dos Santos Moreira<br>COREN-MG 966.189 – ENF</div>";
+document.getElementById("documento").innerHTML=html;
+document.getElementById("printPanel").hidden=false;
+tab("prescricao",document.querySelectorAll("nav button")[3]);
+}
+document.getElementById("data").value=new Date().toISOString().slice(0,10);
+renderCatalog();
+</script>
+</body>
+</html>
