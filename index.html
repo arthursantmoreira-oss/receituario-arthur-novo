@@ -6,47 +6,241 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Enf. Arthur | Receituário</title>
 <style>
-:root{--navy:#173b4a;--teal:#18788a;--bg:#f1f5f7;--line:#dce5e9}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:#263b44}
-header{background:var(--navy);color:white;padding:24px 5%}
-header h1{margin:0 0 7px;font-size:23px}
-header p{margin:4px 0;font-size:13px}
-nav{background:white;padding:12px 5%;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
-button{border:0;border-radius:7px;padding:11px 15px;background:var(--teal);color:white;font-weight:bold;cursor:pointer}
-nav button{background:#edf3f5;color:var(--navy)}
-nav button.active{background:var(--navy);color:white}
-main{max-width:1100px;margin:24px auto;padding:0 15px 40px}
-.panel{background:white;border:1px solid var(--line);border-radius:12px;padding:21px;margin-bottom:17px}
-h2{color:var(--navy);font-size:20px;margin-top:0}
-h3{color:var(--navy);font-size:16px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-.full{grid-column:1/-1}
-label{display:block;font-size:13px;font-weight:bold;margin:10px 0 6px}
-input,select,textarea{width:100%;padding:11px;border:1px solid #cbd8dd;border-radius:7px;font:inherit;background:white}
-textarea{min-height:80px}
-.small{font-size:12px;color:#657981}
-.notice{background:#fff7e5;border:1px solid #eed9a7;color:#6b5425;padding:12px;border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:15px}
-.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:15px}
-.drug{border:1px solid var(--line);border-radius:9px;padding:13px}
-.drug strong{color:var(--navy)}
-.drug p{font-size:12px;line-height:1.5;margin:6px 0}
-.drug button{font-size:12px;padding:8px 10px}
-.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
-.secondary{background:#eaf0f2;color:var(--navy)}
-.danger{background:#a33e3e}
-.item{border-bottom:1px solid var(--line);padding:12px 0}
-.item:last-child{border:0}
-[hidden]{display:none!important}
-footer{text-align:center;color:#70838a;font-size:12px;padding:20px}
-@media(max-width:650px){.grid,.results{grid-template-columns:1fr}.full{grid-column:auto}}
-@media print{
- body{background:white;color:black}
- header,nav,.no-print,footer{display:none!important}
- main{margin:0;padding:0}
- .panel{display:none;border:0;box-shadow:none;padding:0}
- #printPanel{display:block!important}
- @page{size:A4;margin:2cm}
+:root {
+  --navy: #173b4a;
+  --navy-dark: #102d39;
+  --teal: #18788a;
+  --teal-light: #e8f3f5;
+  --bg: #f3f6f9;
+  --white: #ffffff;
+  --line: #dce5e9;
+  --text: #263746;
+  --muted: #718096;
+  --shadow: 0 3px 12px rgba(20, 45, 60, 0.07);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  display: grid;
+  grid-template-columns: 245px minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+}
+
+/* CABEÇALHO */
+header {
+  grid-column: 1 / -1;
+  background: var(--navy-dark);
+  color: white;
+  padding: 22px 30px;
+  box-shadow: var(--shadow);
+}
+
+header h1,
+header h2 {
+  margin: 0 0 5px;
+}
+
+header p {
+  margin: 5px 0 0;
+  color: #d7e5ea;
+}
+
+/* MENU LATERAL */
+nav {
+  grid-column: 1;
+  grid-row: 2;
+  background: var(--navy);
+  padding: 22px 14px;
+  min-height: calc(100vh - 90px);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+nav button {
+  width: 100%;
+  text-align: left;
+  padding: 13px 15px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+nav button:hover,
+nav button.active {
+  background: var(--teal);
+  color: white;
+}
+
+/* CONTEÚDO */
+main {
+  grid-column: 2;
+  grid-row: 2;
+  padding: 28px;
+  width: 100%;
+  min-width: 0;
+}
+
+section,
+#paciente,
+#catalogo,
+#protocolo,
+#prescricao {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+h1, h2, h3, h4 {
+  color: var(--navy);
+}
+
+p {
+  line-height: 1.5;
+}
+
+/* CAMPOS */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #cbd5df;
+  border-radius: 7px;
+  background: white;
+  color: var(--text);
+  font-size: 14px;
+  margin-top: 5px;
+  margin-bottom: 12px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #b6dce2;
+  border-color: var(--teal);
+}
+
+/* BOTÕES */
+button {
+  transition: background 0.2s ease;
+}
+
+main button {
+  background: var(--teal);
+  color: white;
+  border: 0;
+  border-radius: 7px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+main button:hover {
+  background: var(--navy);
+}
+
+/* CATÁLOGO E CARTÕES */
+#catalogo > div,
+#catalogo .medicamento,
+#catalogo .item {
+  border-radius: 9px;
+}
+
+#catalogo button {
+  margin: 4px;
+}
+
+#catalogo input,
+#catalogo select {
+  max-width: 100%;
+}
+
+/* LISTAS */
+ul {
+  padding-left: 22px;
+}
+
+li {
+  margin-bottom: 7px;
+}
+
+/* IMPRESSÃO */
+@media print {
+  body {
+    display: block;
+    background: white;
+  }
+
+  header,
+  nav,
+  main {
+    display: none !important;
+  }
+
+  #printPanel {
+    display: block !important;
+    background: white;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+}
+
+/* CELULAR E TABLET */
+@media (max-width: 760px) {
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 18px;
+  }
+
+  nav {
+    min-height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+
+  nav button {
+    width: auto;
+    flex: 1 1 130px;
+    text-align: center;
+  }
+
+  main {
+    padding: 14px;
+  }
+
+  section,
+  #paciente,
+  #catalogo,
+  #protocolo,
+  #prescricao {
+    padding: 15px;
+  }
 }
 </style>
 </head>
@@ -59,10 +253,31 @@ footer{text-align:center;color:#70838a;font-size:12px;padding:20px}
 </header>
 
 <nav class="no-print">
-<button class="active" onclick="tab('paciente',this)">Paciente</button>
-<button onclick="tab('catalogo',this)">Medicamentos</button>
-<button onclick="tab('protocolo',this)">Protocolos</button>
-<button onclick="tab('prescricao',this)">Prescrição</button>
+
+<nav>
+  <button class="active" onclick="tab('paciente',this)">
+    🏠 Painel inicial
+  </button>
+
+  <button onclick="tab('paciente',this)">
+    👤 Cadastro do paciente
+  </button>
+
+  <button onclick="tab('catalogo',this)">
+    💊 Medicamentos
+  </button>
+
+  <button onclick="tab('protocolo',this)">
+    📚 Protocolos
+  </button>
+
+  <button onclick="tab('prescricao',this)">
+    📄 Prescrições
+  </button>
+
+  <button onclick="tab('prescricao',this)">
+    🩹 Estomaterapia e curativos
+  </button>
 </nav>
 
 <main>
