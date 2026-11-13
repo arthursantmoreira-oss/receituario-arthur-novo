@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Enf. Arthur | Receituário</title>
+
 <style>
 :root {
   --navy: #173b4a;
@@ -16,12 +17,10 @@
   --line: #dce5e9;
   --text: #263746;
   --muted: #718096;
-  --shadow: 0 3px 12px rgba(20, 45, 60, 0.07);
+  --shadow: 0 3px 12px rgba(20,45,60,.07);
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -30,11 +29,10 @@ body {
   color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
   display: grid;
-  grid-template-columns: 245px minmax(0, 1fr);
-  grid-template-rows: auto 1fr;
+  grid-template-columns: 245px minmax(0,1fr);
+  grid-template-rows: auto 1fr auto;
 }
 
-/* CABEÇALHO */
 header {
   grid-column: 1 / -1;
   background: var(--navy-dark);
@@ -43,9 +41,9 @@ header {
   box-shadow: var(--shadow);
 }
 
-header h1,
-header h2 {
+header h1, header h2 {
   margin: 0 0 5px;
+  color: #fff;
 }
 
 header p {
@@ -53,7 +51,6 @@ header p {
   color: #d7e5ea;
 }
 
-/* MENU LATERAL */
 nav {
   grid-column: 1;
   grid-row: 2;
@@ -77,13 +74,11 @@ nav button {
   cursor: pointer;
 }
 
-nav button:hover,
-nav button.active {
+nav button:hover, nav button.active {
   background: var(--teal);
   color: white;
 }
 
-/* CONTEÚDO */
 main {
   grid-column: 2;
   grid-row: 2;
@@ -92,11 +87,7 @@ main {
   min-width: 0;
 }
 
-section,
-#paciente,
-#catalogo,
-#protocolo,
-#prescricao {
+section, #paciente, #catalogo, #protocolo, #prescricao, #printPanel {
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -105,18 +96,18 @@ section,
   box-shadow: var(--shadow);
 }
 
-h1, h2, h3, h4 {
-  color: var(--navy);
+h1, h2, h3, h4 { color: var(--navy); }
+p { line-height: 1.5; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
 }
 
-p {
-  line-height: 1.5;
-}
+.grid .full { grid-column: 1 / -1; }
 
-/* CAMPOS */
-input,
-select,
-textarea {
+input, select, textarea {
   width: 100%;
   padding: 11px 12px;
   border: 1px solid #cbd5df;
@@ -128,17 +119,12 @@ textarea {
   margin-bottom: 12px;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
+input:focus, select:focus, textarea:focus {
   outline: 2px solid #b6dce2;
   border-color: var(--teal);
 }
 
-/* BOTÕES */
-button {
-  transition: background 0.2s ease;
-}
+button { transition: background .2s ease; }
 
 main button {
   background: var(--teal);
@@ -150,72 +136,110 @@ main button {
   font-weight: 600;
 }
 
-main button:hover {
-  background: var(--navy);
+main button:hover { background: var(--navy); }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
 }
 
-/* CATÁLOGO E CARTÕES */
-#catalogo > div,
-#catalogo .medicamento,
-#catalogo .item {
+.notice {
+  background: var(--teal-light);
+  border-left: 4px solid var(--teal);
+  padding: 14px;
+  border-radius: 7px;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+  gap: 14px;
+}
+
+.drug, .item {
+  border: 1px solid var(--line);
+  padding: 15px;
+  margin-bottom: 10px;
   border-radius: 9px;
+  background: white;
+  min-width: 0;
 }
 
-#catalogo button {
-  margin: 4px;
+.drug p, .item p {
+  font-size: 13px;
+  margin: 7px 0;
 }
 
-#catalogo input,
-#catalogo select {
-  max-width: 100%;
-}
+#catalogo button { margin: 4px; }
 
-/* LISTAS */
-ul {
-  padding-left: 22px;
-}
+.danger { background: #a83232 !important; }
+.danger:hover { background: #7e2020 !important; }
 
-li {
-  margin-bottom: 7px;
+ul { padding-left: 22px; }
+li { margin-bottom: 7px; }
+
+footer {
+  grid-column: 1 / -1;
+  padding: 14px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 /* IMPRESSÃO */
 @media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
   body {
     display: block;
     background: white;
   }
 
-  header,
-  nav,
+  header, nav, footer {
+    display: none !important;
+  }
+
   main {
+    display: block !important;
+    padding: 0;
+    margin: 0;
+  }
+
+  main > .panel {
     display: none !important;
   }
 
   #printPanel {
     display: block !important;
+    visibility: visible !important;
     background: white;
     border: 0;
     box-shadow: none;
     padding: 0;
-  }
-
-  @page {
-    size: A4;
-    margin: 15mm;
+    margin: 0;
   }
 }
 
 /* CELULAR E TABLET */
-@media (max-width: 760px) {
+@media (max-width:760px) {
   body {
     display: flex;
     flex-direction: column;
   }
 
-  header {
-    padding: 18px;
-  }
+  header { padding: 18px; }
 
   nav {
     min-height: auto;
@@ -230,119 +254,195 @@ li {
     text-align: center;
   }
 
-  main {
-    padding: 14px;
-  }
+  main { padding: 14px; }
 
-  section,
-  #paciente,
-  #catalogo,
-  #protocolo,
-  #prescricao {
+  section, #paciente, #catalogo, #protocolo, #prescricao {
     padding: 15px;
   }
 }
+
+@media (max-width:600px) {
+  .grid { grid-template-columns: 1fr; }
+  .grid .full { grid-column: auto; }
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<h1>Enf. Arthur – Estomaterapia</h1>
-<p>Arthur dos Santos Moreira</p>
-<p>COREN-MG 966.189 – ENF</p>
-<p>Enfermeiro Emergencista e Intensivista</p>
+  <h1>Enf. Arthur – Estomaterapia</h1>
+  <p>Arthur dos Santos Moreira</p>
+  <p>COREN-MG 966.189 – ENF</p>
+  <p>Enfermeiro Emergencista e Intensivista</p>
 </header>
 
 <nav class="no-print">
-
-<nav>
   <button class="active" onclick="tab('paciente',this)">
     🏠 Painel inicial
   </button>
-
   <button onclick="tab('paciente',this)">
     👤 Cadastro do paciente
   </button>
-
   <button onclick="tab('catalogo',this)">
     💊 Medicamentos
   </button>
-
   <button onclick="tab('protocolo',this)">
     📚 Protocolos
   </button>
-
   <button onclick="tab('prescricao',this)">
     📄 Prescrições
   </button>
-
   <button onclick="tab('prescricao',this)">
     🩹 Estomaterapia e curativos
   </button>
 </nav>
 
 <main>
+
 <section class="panel" id="paciente">
-<h2>1. Identificação do paciente</h2>
-<div class="grid">
-<div class="full"><label>Nome completo</label><input id="nome" placeholder="Nome do paciente"></div>
-<div><label>Data de nascimento</label><input id="nascimento" type="date"></div>
-<div><label>CPF ou identificador</label><input id="cpf" placeholder="Identificador do paciente"></div>
-<div><label>Data da prescrição</label><input id="data" type="date"></div>
-<div><label>Instituição / serviço</label><input id="instituicao" value="Enf. Arthur – Estomaterapia"></div>
-<div class="full"><label>CNPJ do serviço</label><input id="cnpj" value="64.033.628/0001-76"></div>
-</div>
-<div class="actions"><button onclick="tab('catalogo',document.querySelectorAll('nav button')[1])">Ir para medicamentos</button></div>
+  <h2>1. Identificação do paciente</h2>
+
+  <div class="grid">
+    <div class="full">
+      <label>Nome completo</label>
+      <input id="nome" placeholder="Nome do paciente">
+    </div>
+
+    <div>
+      <label>Data de nascimento</label>
+      <input id="nascimento" type="date">
+    </div>
+
+    <div>
+      <label>CPF ou identificador</label>
+      <input id="cpf" placeholder="Identificador do paciente">
+    </div>
+
+    <div>
+      <label>Data da prescrição</label>
+      <input id="data" type="date">
+    </div>
+
+    <div>
+      <label>Instituição / serviço</label>
+      <input id="instituicao" value="Enf. Arthur – Estomaterapia">
+    </div>
+
+    <div class="full">
+      <label>CNPJ do serviço</label>
+      <input id="cnpj" value="64.033.628/0001-76">
+    </div>
+  </div>
+
+  <div class="actions">
+    <button onclick="tab('catalogo',document.querySelectorAll('nav button')[2])">
+      Ir para medicamentos
+    </button>
+  </div>
 </section>
 
 <section class="panel" id="catalogo" hidden>
-<h2>2. Catálogo de medicamentos – Anexo II</h2>
-<div class="notice">
-Catálogo de referência baseado no Anexo II da Resolução Cofen nº 801/2026. A inclusão de um medicamento no Anexo não concede autorização irrestrita para prescrevê-lo. A prescrição depende de consulta de enfermagem, competência profissional e protocolo ou rotina aprovada aplicável.
-</div>
-<div class="grid">
-<div class="full"><label>Pesquisar medicamento, concentração ou apresentação</label><input id="busca" placeholder="Digite para pesquisar..." oninput="renderCatalog()"></div>
-<div class="full"><label>Filtrar por grupo</label>
-<select id="grupo" onchange="renderCatalog()">
-<option value="">Todos os grupos</option>
-</select></div>
-</div>
-<p class="small" id="contador"></p>
-<div class="results" id="resultados"></div>
-<h3>Medicamentos selecionados</h3>
-<div id="selecionados"><p class="small">Nenhum item selecionado.</p></div>
+  <h2>2. Catálogo de medicamentos – Anexo II</h2>
+
+  <div class="notice">
+    Catálogo de referência baseado no Anexo II da Resolução Cofen nº 801/2026.
+    A inclusão de um medicamento no Anexo não concede autorização irrestrita
+    para prescrevê-lo. A prescrição depende de consulta de enfermagem,
+    competência profissional e protocolo ou rotina aprovada aplicável.
+  </div>
+
+  <div class="grid">
+    <div class="full">
+      <label>Pesquisar medicamento, concentração ou apresentação</label>
+      <input id="busca" placeholder="Digite para pesquisar..." oninput="renderCatalog()">
+    </div>
+
+    <div class="full">
+      <label>Filtrar por grupo</label>
+      <select id="grupo" onchange="renderCatalog()">
+        <option value="">Todos os grupos</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="small" id="contador"></p>
+  <div class="results" id="resultados"></div>
+
+  <h3>Medicamentos selecionados</h3>
+  <div id="selecionados">
+    <p class="small">Nenhum item selecionado.</p>
+  </div>
 </section>
 
 <section class="panel" id="protocolo" hidden>
-<h2>3. Protocolo e respaldo institucional</h2>
-<div class="notice">Informe o protocolo realmente utilizado, seu ano e a instituição que o aprovou. O documento de referência do Anexo II não substitui a aprovação do protocolo do serviço.</div>
-<div class="grid">
-<div class="full"><label>Nome do protocolo</label><input id="protNome" placeholder="Nome do protocolo utilizado"></div>
-<div><label>Instituição que aprovou</label><input id="protInstituicao" placeholder="Instituição responsável"></div>
-<div><label>Ano de aprovação/publicação</label><input id="protAno" placeholder="Ano"></div>
-<div class="full"><label>Link oficial</label><input id="protLink" placeholder="https://..."></div>
-<div class="full"><label>Observações</label><textarea id="protObs"></textarea></div>
-</div>
+  <h2>3. Protocolo e respaldo institucional</h2>
+
+  <div class="notice">
+    Informe o protocolo realmente utilizado, seu ano e a instituição que o aprovou.
+    O documento de referência do Anexo II não substitui a aprovação do protocolo do serviço.
+  </div>
+
+  <div class="grid">
+    <div class="full">
+      <label>Nome do protocolo</label>
+      <input id="protNome" placeholder="Nome do protocolo utilizado">
+    </div>
+
+    <div>
+      <label>Instituição que aprovou</label>
+      <input id="protInstituicao" placeholder="Instituição responsável">
+    </div>
+
+    <div>
+      <label>Ano de aprovação/publicação</label>
+      <input id="protAno" placeholder="Ano">
+    </div>
+
+    <div class="full">
+      <label>Link oficial</label>
+      <input id="protLink" placeholder="https://...">
+    </div>
+
+    <div class="full">
+      <label>Observações</label>
+      <textarea id="protObs"></textarea>
+    </div>
+  </div>
 </section>
 
 <section class="panel" id="prescricao" hidden>
-<h2>4. Montagem da prescrição</h2>
-<div class="notice">Confira a indicação, a dose, a via, a duração, as contraindicações, as alergias e as condições individuais do paciente. Não utilize posologia automática sem respaldo no protocolo aplicável.</div>
-<div id="listaPrescricao"></div>
-<div class="actions">
-<button onclick="gerar()">Gerar receituário</button>
-<button onclick="window.print()">Imprimir / Salvar PDF</button>
-</div>
+  <h2>4. Montagem da prescrição</h2>
+
+  <div class="notice">
+    Confira a indicação, a dose, a via, a duração, as contraindicações,
+    as alergias e as condições individuais do paciente.
+    Não utilize posologia automática sem respaldo no protocolo aplicável.
+  </div>
+
+  <div id="listaPrescricao"></div>
+
+  <div class="actions">
+    <button onclick="gerar()">Gerar receituário</button>
+    <button onclick="imprimirReceituario()">Imprimir / Salvar PDF</button>
+  </div>
 </section>
 
 <section class="panel" id="printPanel" hidden>
-<div id="documento"></div>
+  <div id="documento"></div>
 </section>
+
 </main>
-<footer>Ferramenta de apoio. Uso condicionado às normas profissionais, sanitárias e aos protocolos aprovados.</footer>
+
+<footer>
+  Ferramenta de apoio. Uso condicionado às normas profissionais,
+  sanitárias e aos protocolos aprovados.
+</footer>
 
 <script>
-const fonte="Resolução Cofen nº 801/2026 – Anexo II";
-const dados=[
+const fonte = "Resolução Cofen nº 801/2026 – Anexo II";
+
+const dados = [
 ["1. IST, saúde sexual e reprodutiva","Aciclovir","200 mg","Comprimido","Herpes genital","PCDT de Atenção Integral às Pessoas com IST"],
 ["1. IST, saúde sexual e reprodutiva","Benzilpenicilina benzatina","1,2 milhão UI","Suspensão injetável","Sífilis recente e tardia","PCDT IST – Sífilis; Portaria MS nº 156/2006"],
 ["1. IST, saúde sexual e reprodutiva","Doxiciclina","100 mg","Comprimido","Sífilis alternativa (exceto gestantes), donovanose e uretrites","PCDT IST"],
@@ -503,69 +603,234 @@ const dados=[
 ["10. Dengue","Soro fisiológico 0,9%","500 mL","Solução endovenosa","Hidratação venosa","Nota Técnica nº 01/2024 – COE/Cofen"]
 ];
 
-let escolhidos=[];
-const grupos=[...new Set(dados.map(x=>x[0]))];
-grupos.forEach(g=>document.getElementById("grupo").add(new Option(g,g)));
-function tab(id,b){
-document.querySelectorAll("main>.panel").forEach(p=>{if(p.id!=="printPanel")p.hidden=p.id!==id});
-document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
-if(b)b.classList.add("active");
-}
-function renderCatalog(){
-const q=document.getElementById("busca").value.toLocaleLowerCase("pt-BR");
-const g=document.getElementById("grupo").value;
-const filtrados=dados.filter(x=>(!g||x[0]===g)&&x.join(" ").toLocaleLowerCase("pt-BR").includes(q));
-document.getElementById("contador").textContent=filtrados.length+" apresentação(ões) encontradas no catálogo.";
-const box=document.getElementById("resultados");box.replaceChildren();
-filtrados.forEach(x=>{
-const card=document.createElement("div");card.className="drug";
-const title=document.createElement("strong");title.textContent=x[1];
-const p=document.createElement("p");p.textContent=x[0];
-const detail=document.createElement("p");detail.textContent="Concentração: "+x[2]+" | Apresentação: "+x[3];
-const use=document.createElement("p");use.textContent="Uso de referência: "+x[4];
-const source=document.createElement("p");source.textContent="Documento: "+x[5];
-const b=document.createElement("button");b.textContent="Selecionar";
-b.onclick=()=>selecionar(x);
-card.append(title,p,detail,use,source,b);box.append(card);
+let escolhidos = [];
+
+const grupos = [...new Set(dados.map(x => x[0]))];
+
+grupos.forEach(g => {
+  document.getElementById("grupo").add(new Option(g,g));
 });
+
+/* NAVEGAÇÃO */
+function tab(id,b) {
+  document.querySelectorAll("main>.panel").forEach(p => {
+    if (p.id !== "printPanel") {
+      p.hidden = p.id !== id;
+    }
+  });
+
+  document.querySelectorAll("nav button").forEach(x => {
+    x.classList.remove("active");
+  });
+
+  if (b) b.classList.add("active");
 }
-function selecionar(x){
-const dose=prompt("Informe a posologia conforme protocolo aprovado. Não há dose automática:", "");
-if(dose===null)return;
-const via=prompt("Informe a via de administração:", "");
-if(via===null)return;
-escolhidos.push({grupo:x[0],nome:x[1],conc:x[2],apres:x[3],uso:x[4],fonte:x[5],dose,via});
-renderEscolhidos();
+
+/* CATÁLOGO */
+function renderCatalog() {
+  const q = document.getElementById("busca").value.toLocaleLowerCase("pt-BR");
+  const g = document.getElementById("grupo").value;
+
+  const filtrados = dados.filter(x =>
+    (!g || x[0] === g) &&
+    x.join(" ").toLocaleLowerCase("pt-BR").includes(q)
+  );
+
+  document.getElementById("contador").textContent =
+    filtrados.length + " apresentação(ões) encontradas no catálogo.";
+
+  const box = document.getElementById("resultados");
+  box.replaceChildren();
+
+  filtrados.forEach(x => {
+    const card = document.createElement("div");
+    card.className = "drug";
+
+    const title = document.createElement("strong");
+    title.textContent = x[1];
+
+    const p = document.createElement("p");
+    p.textContent = x[0];
+
+    const detail = document.createElement("p");
+    detail.textContent = "Concentração: " + x[2] +
+      " | Apresentação: " + x[3];
+
+    const use = document.createElement("p");
+    use.textContent = "Uso de referência: " + x[4];
+
+    const source = document.createElement("p");
+    source.textContent = "Documento: " + x[5];
+
+    const b = document.createElement("button");
+    b.textContent = "Selecionar";
+    b.onclick = () => selecionar(x);
+
+    card.append(title,p,detail,use,source,b);
+    box.append(card);
+  });
 }
-function renderEscolhidos(){
-const box=document.getElementById("selecionados");box.replaceChildren();
-if(!escolhidos.length){box.textContent="Nenhum item selecionado.";return;}
-escolhidos.forEach((x,i)=>{
-const d=document.createElement("div");d.className="item";
-const p=document.createElement("p");p.textContent=(i+1)+". "+x.nome+" – "+x.conc+" – "+x.apres+" | Via: "+x.via+" | Posologia: "+x.dose;
-const b=document.createElement("button");b.className="danger";b.textContent="Remover";b.onclick=()=>{escolhidos.splice(i,1);renderEscolhidos()};
-d.append(p,b);box.append(d);
-});
+
+/* SELEÇÃO */
+function selecionar(x) {
+  const dose = prompt(
+    "Informe a posologia conforme protocolo aprovado. Não há dose automática:",
+    ""
+  );
+
+  if (dose === null) return;
+
+  const via = prompt("Informe a via de administração:", "");
+  if (via === null) return;
+
+  escolhidos.push({
+    grupo:x[0],
+    nome:x[1],
+    conc:x[2],
+    apres:x[3],
+    uso:x[4],
+    fonte:x[5],
+    dose,
+    via
+  });
+
+  renderEscolhidos();
 }
-function gerar(){
-const n=document.getElementById("nome").value.trim();
-if(!n){alert("Informe o nome do paciente.");tab("paciente",document.querySelector("nav button"));return;}
-if(!escolhidos.length){alert("Selecione pelo menos um item no catálogo.");tab("catalogo",document.querySelectorAll("nav button")[1]);return;}
-const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let html="<h2 style='text-align:center'>RECEITUÁRIO / PRESCRIÇÃO</h2>";
-html+="<p><b>Arthur dos Santos Moreira</b><br>COREN-MG 966.189 – ENF<br>Enfermeiro Emergencista e Intensivista</p><hr>";
-html+="<p><b>Serviço:</b> "+esc(document.getElementById("instituicao").value)+"<br><b>CNPJ:</b> "+esc(document.getElementById("cnpj").value)+"</p>";
-html+="<p><b>Paciente:</b> "+esc(n)+"<br><b>Nascimento:</b> "+esc(document.getElementById("nascimento").value)+"<br><b>Identificador:</b> "+esc(document.getElementById("cpf").value)+"<br><b>Data:</b> "+esc(document.getElementById("data").value)+"</p><hr><h3>Prescrição</h3>";
-escolhidos.forEach((x,i)=>{html+="<p><b>"+(i+1)+". "+esc(x.nome)+"</b><br>Concentração: "+esc(x.conc)+"<br>Apresentação: "+esc(x.apres)+"<br>Via: "+esc(x.via)+"<br>Posologia: "+esc(x.dose)+"<br>Grupo: "+esc(x.grupo)+"</p>"});
-html+="<hr><h3>Protocolo utilizado</h3><p>"+esc(document.getElementById("protNome").value)+"<br>"+esc(document.getElementById("protInstituicao").value)+" – "+esc(document.getElementById("protAno").value)+"<br>"+esc(document.getElementById("protObs").value)+"</p>";
-html+="<p class='small'>Referência do catálogo: "+fonte+". Conferir protocolo institucional aprovado e indicação clínica.</p>";
-html+="<div style='margin-top:65px;text-align:center'>_____________________________________<br>Arthur dos Santos Moreira<br>COREN-MG 966.189 – ENF</div>";
-document.getElementById("documento").innerHTML=html;
-document.getElementById("printPanel").hidden=false;
-tab("prescricao",document.querySelectorAll("nav button")[3]);
+
+/* MEDICAMENTOS SELECIONADOS */
+function renderEscolhidos() {
+  const box = document.getElementById("selecionados");
+  box.replaceChildren();
+
+  if (!escolhidos.length) {
+    box.textContent = "Nenhum item selecionado.";
+    return;
+  }
+
+  escolhidos.forEach((x,i) => {
+    const d = document.createElement("div");
+    d.className = "item";
+
+    const p = document.createElement("p");
+    p.textContent = (i+1) + ". " + x.nome +
+      " – " + x.conc +
+      " – " + x.apres +
+      " | Via: " + x.via +
+      " | Posologia: " + x.dose;
+
+    const b = document.createElement("button");
+    b.className = "danger";
+    b.textContent = "Remover";
+
+    b.onclick = () => {
+      escolhidos.splice(i,1);
+      renderEscolhidos();
+    };
+
+    d.append(p,b);
+    box.append(d);
+  });
 }
-document.getElementById("data").value=new Date().toISOString().slice(0,10);
+
+/* ESCAPE DE TEXTO */
+function esc(s) {
+  return String(s || "").replace(/[&<>"']/g,c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
+}
+
+/* GERAR RECEITUÁRIO */
+function gerar() {
+  const n = document.getElementById("nome").value.trim();
+
+  if (!n) {
+    alert("Informe o nome do paciente.");
+    tab("paciente",document.querySelectorAll("nav button")[1]);
+    return;
+  }
+
+  if (!escolhidos.length) {
+    alert("Selecione pelo menos um item no catálogo.");
+    tab("catalogo",document.querySelectorAll("nav button")[2]);
+    return;
+  }
+
+  let html = "<h2 style='text-align:center'>RECEITUÁRIO / PRESCRIÇÃO</h2>";
+
+  html += "<p><b>Arthur dos Santos Moreira</b><br>" +
+    "COREN-MG 966.189 – ENF<br>" +
+    "Enfermeiro Emergencista e Intensivista</p><hr>";
+
+  html += "<p><b>Serviço:</b> " +
+    esc(document.getElementById("instituicao").value) +
+    "<br><b>CNPJ:</b> " +
+    esc(document.getElementById("cnpj").value) +
+    "</p>";
+
+  html += "<p><b>Paciente:</b> " + esc(n) +
+    "<br><b>Nascimento:</b> " +
+    esc(document.getElementById("nascimento").value) +
+    "<br><b>Identificador:</b> " +
+    esc(document.getElementById("cpf").value) +
+    "<br><b>Data:</b> " +
+    esc(document.getElementById("data").value) +
+    "</p><hr><h3>Prescrição</h3>";
+
+  escolhidos.forEach((x,i) => {
+    html += "<p><b>" + (i+1) + ". " + esc(x.nome) + "</b>" +
+      "<br>Concentração: " + esc(x.conc) +
+      "<br>Apresentação: " + esc(x.apres) +
+      "<br>Via: " + esc(x.via) +
+      "<br>Posologia: " + esc(x.dose) +
+      "<br>Grupo: " + esc(x.grupo) +
+      "</p>";
+  });
+
+  html += "<hr><h3>Protocolo utilizado</h3><p>" +
+    esc(document.getElementById("protNome").value) +
+    "<br>" +
+    esc(document.getElementById("protInstituicao").value) +
+    " – " +
+    esc(document.getElementById("protAno").value) +
+    "<br>" +
+    esc(document.getElementById("protObs").value) +
+    "</p>";
+
+  html += "<p class='small'>Referência do catálogo: " +
+    fonte +
+    ". Conferir protocolo institucional aprovado e indicação clínica.</p>";
+
+  html += "<div style='margin-top:65px;text-align:center'>" +
+    "_____________________________________<br>" +
+    "Arthur dos Santos Moreira<br>" +
+    "COREN-MG 966.189 – ENF</div>";
+
+  document.getElementById("documento").innerHTML = html;
+  document.getElementById("printPanel").hidden = false;
+
+  tab("prescricao",document.querySelectorAll("nav button")[4]);
+}
+
+/* IMPRESSÃO */
+function imprimirReceituario() {
+  if (document.getElementById("printPanel").hidden) {
+    alert("Primeiro gere o receituário.");
+    return;
+  }
+
+  window.print();
+}
+
+/* INICIALIZAÇÃO */
+document.getElementById("data").value =
+  new Date().toISOString().slice(0,10);
+
 renderCatalog();
 </script>
+
 </body>
 </html>
